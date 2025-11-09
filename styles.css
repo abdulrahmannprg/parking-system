@@ -1,0 +1,45 @@
+/* تأثير Fade In */
+.fadeIn {
+    animation: fadeInAnimation 2s ease-in-out;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* تأثير Slide In */
+.slideIn {
+    animation: slideInAnimation 1s ease-in-out;
+}
+
+@keyframes slideInAnimation {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* تأثير عند تحميل الصفحة */
+.pageLoadAnimation {
+    animation: pageLoad 1s ease-out;
+}
+
+@keyframes pageLoad {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
