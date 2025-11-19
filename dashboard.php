@@ -1,92 +1,57 @@
+<?php
+session_start();
+
+// التحقق من أن المستخدم قد سجل الدخول وأنه مشرف
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: login.php');  // إذا لم يكن مشرفًا أو لم يسجل دخوله، إعادة التوجيه إلى صفحة تسجيل الدخول
+    exit;
+}
+
+// الاتصال بقاعدة البيانات
+include 'db_connect.php';
+
+// استعلام المواقف المتاحة
+$spots = mysqli_query($conn, "SELECT * FROM parking_spots");
+?>
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم</title>
+    <title>لوحة تحكم المشرف</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-    <!-- شريط التنقل -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">🚗 لوحة التحكم</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="index.php">الرئيسية</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="booking.php">حجز موقف</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="dashboard.php">لوحة التحكم</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+<body class="bg-light">
+<div class="container mt-4">
+    <h2 class="text-center mb-4">مرحبًا، <?= $_SESSION['username']; ?>!</h2>
+    <p class="text-center">تم تسجيل الدخول بنجاح كمشرف.</p>
 
-    <!-- محتوى الصفحة -->
-    <div class="container mt-4">
-        <h2>الإحصائيات</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">إجمالي المواقف</h5>
-                        <p class="card-text">
-                            <?php
-                                include 'db_connect.php';
-                                $result = mysqli_query($conn, "SELECT COUNT(*) FROM parking_spots");
-                                $row = mysqli_fetch_assoc($result);
-                                echo $row['COUNT(*)'];
-                            ?>
-                        </p>
+    <!-- عرض المواقف -->
+    <h4 class="text-center mb-4">إدارة المواقف</h4>
+    <div class="row">
+        <?php if(mysqli_num_rows($spots) > 0): ?>
+            <?php while($row = mysqli_fetch_assoc($spots)): ?>
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= $row['spot_number']; ?></h5>
+                            <p class="card-text"><?= $row['status']; ?></p>
+                            <!-- يمكنك إضافة المزيد من العمليات هنا للمشرف مثل تحديث أو حذف الموقف -->
+                            <a href="delete_parking_spot.php?spot_id=<?= $row['id']; ?>" class="btn btn-danger btn-block">حذف</a>
+                        </div>
                     </div>
                 </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <div class="col-12">
+                <p class="text-center">لا توجد مواقف حالياً.</p>
             </div>
-
-            <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">المواقف المتاحة</h5>
-                        <p class="card-text">
-                            <?php
-                                $result = mysqli_query($conn, "SELECT COUNT(*) FROM parking_spots WHERE status = 'available'");
-                                $row = mysqli_fetch_assoc($result);
-                                echo $row['COUNT(*)'];
-                            ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-danger text-white">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">المواقف المحجوزة</h5>
-                        <p class="card-text">
-                            <?php
-                                $result = mysqli_query($conn, "SELECT COUNT(*) FROM parking_spots WHERE status = 'booked'");
-                                $row = mysqli_fetch_assoc($result);
-                                echo $row['COUNT(*)'];
-                            ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- زر تسجيل الخروج -->
+    <a href="logout.php" class="btn btn-danger btn-block mt-4">تسجيل الخروج</a>
+</div>
 </body>
 </html>

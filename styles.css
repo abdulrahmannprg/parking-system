@@ -1,45 +1,27 @@
-/* تأثير Fade In */
-.fadeIn {
-    animation: fadeInAnimation 2s ease-in-out;
+/* تصغير المربعات */
+.card {
+    height: 250px; /* تقليل الارتفاع */
+    margin-bottom: 15px; /* تقليل المسافة بين الكاردات */
 }
 
-@keyframes fadeInAnimation {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+.card-body {
+    padding: 15px; /* تقليل المسافة الداخلية للكارد */
 }
 
-/* تأثير Slide In */
-.slideIn {
-    animation: slideInAnimation 1s ease-in-out;
+.card-title {
+    font-size: 1.2rem; /* تقليل حجم العنوان */
 }
 
-@keyframes slideInAnimation {
-    0% {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
+.card-text {
+    font-size: 1rem; /* تقليل حجم النص */
 }
 
-/* تأثير عند تحميل الصفحة */
-.pageLoadAnimation {
-    animation: pageLoad 1s ease-out;
+.btn-block {
+    padding: 10px; /* تقليل حجم الأزرار */
+    font-size: 1rem; /* تقليل حجم الخط في الأزرار */
 }
 
-@keyframes pageLoad {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+/* تصغير المسافة بين الأعمدة */
+.row {
+    margin-top: 15px;
 }

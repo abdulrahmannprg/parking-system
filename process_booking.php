@@ -1,7 +1,7 @@
 <?php
 include 'db_connect.php';
 
-if (!isset($_GET['spot_id'])) {
+if(!isset($_GET['spot_id'])){
     die("لم يتم تحديد الموقف.");
 }
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>تم الحجز</title>
         <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' rel='stylesheet'>
-        <meta http-equiv='refresh' content='3;url=index.php'> <!-- إعادة التوجيه بعد 3 ثواني -->
+        <meta http-equiv='refresh' content='3;url=index.php'>
     </head>
     <body>
         <div class='container mt-5'>
@@ -86,4 +86,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </form>
 </div>
 </body>
-</html>
+</html> 

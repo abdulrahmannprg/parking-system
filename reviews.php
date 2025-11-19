@@ -1,11 +1,13 @@
 <?php
 session_start();
+include 'db_connect.php';
 
 // التحقق من إذا كان المستخدم قد سجل دخوله
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');  // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول إذا لم يكن قد سجل دخوله
     exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -13,11 +15,10 @@ if (!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الصفحة الرئيسية</title>
+    <title>التقييمات</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css"> <!-- إذا كنت تريد تخصيص إضافي في ملف styles.css -->
     <style>
-        /* إضافة بعض التخصيصات لتصميم التقييمات */
         .rating i {
             color: gold;
         }
@@ -36,43 +37,49 @@ if (!isset($_SESSION['user_id'])) {
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link active" href="index.php">الرئيسية</a></li>
                     <li class="nav-item"><a class="nav-link" href="logout.php">تسجيل الخروج</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reviews.php">التقييمات</a></li> <!-- رابط التقييمات -->
+                    <li class="nav-item"><a class="nav-link" href="reviews.php">التقييمات</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- محتوى الصفحة الرئيسية -->
+    <!-- محتوى صفحة التقييمات -->
     <div class="container mt-5">
-        <div class="jumbotron text-center">
-            <h1 class="display-6">مرحبًا بك في نظام مواقف السيارات الذكي!</h1>
-            <p class="lead">نظام مواقف السيارات الذكي يتيح لك حجز المواقف بشكل سهل ومرن.</p>
-            <hr class="my-4">
-        </div>
-
-        <!-- عرض مواقف VIP والعادية جنبًا إلى جنب -->
+        <h2 class="text-center">آراء العملاء</h2>
         <div class="row">
-            <!-- مواقف VIP -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">مواقف VIP </h5>
-                        <a href="booking.php?type=vip" class="btn btn-danger btn-block">عرض مواقف VIP</a>
-                    </div>
-                </div>
-            </div>
+            <?php
+            // استعلام لجلب آخر 5 تقييمات للمواقف
+            $query = "SELECT * FROM reviews ORDER BY created_at DESC LIMIT 5";
+            $result = mysqli_query($conn, $query);
 
-            <!-- المواقف العادية -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">المواقف العاديه</h5>
-                        <a href="booking.php?type=regular" class="btn btn-primary btn-block">عرض المواقف المتاحة</a>
+            // عرض التقييمات
+            while ($row = mysqli_fetch_assoc($result)) {
+                $rating = $row['rating'];  // الحصول على التقييم من قاعدة البيانات
+                ?>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $row['username']; ?></h5>
+                            <p class="card-text"><?php echo $row['review']; ?></p>
+                            <div class="rating">
+                                <?php
+                                // عرض النجوم بناءً على التقييم
+                                for ($i = 1; $i <= 5; $i++) {
+                                    if ($i <= $rating) {
+                                        echo '<i class="fas fa-star"></i>';  // نجم مملوء
+                                    } else {
+                                        echo '<i class="far fa-star"></i>';  // نجم فارغ
+                                    }
+                                }
+                                ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <?php
+            }
+            ?>
         </div>
-
     </div>
 
     <!-- إضافة جافا سكربت من مكتبة بووتستريب -->
