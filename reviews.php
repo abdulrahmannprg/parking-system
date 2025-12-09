@@ -16,8 +16,19 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>التقييمات</title>
+
+    <!-- Bootstrap -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css"> <!-- إذا كنت تريد تخصيص إضافي في ملف styles.css -->
+
+    <!-- ملف التنسيق الخاص بك -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Font Awesome للنجوم -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-dBwexv3xNq7pAo0P5PLQ4KJIp4jOSAmhpN6wX+Z1GDZCBo2yrGNsq4CPGK/c/pXHi1nKwxLBzj2Yx04Ec/2XYg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         .rating i {
             color: gold;
@@ -35,9 +46,9 @@ if (!isset($_SESSION['user_id'])) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link active" href="index.php">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php">الرئيسية</a></li>
                     <li class="nav-item"><a class="nav-link" href="logout.php">تسجيل الخروج</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reviews.php">التقييمات</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="reviews.php">التقييمات</a></li>
                 </ul>
             </div>
         </div>
@@ -45,38 +56,49 @@ if (!isset($_SESSION['user_id'])) {
 
     <!-- محتوى صفحة التقييمات -->
     <div class="container mt-5">
-        <h2 class="text-center">آراء العملاء</h2>
+        <h2 class="text-center mb-4">تقييمات العملاء</h2>
         <div class="row">
             <?php
-            // استعلام لجلب آخر 5 تقييمات للمواقف
-            $query = "SELECT * FROM reviews ORDER BY created_at DESC LIMIT 5";
+            // جلب آخر 5 حجوزات تم تقييمها
+            $query  = "SELECT * FROM bookings WHERE rating IS NOT NULL ORDER BY booking_time DESC LIMIT 5";
             $result = mysqli_query($conn, $query);
 
-            // عرض التقييمات
-            while ($row = mysqli_fetch_assoc($result)) {
-                $rating = $row['rating'];  // الحصول على التقييم من قاعدة البيانات
-                ?>
-                <div class="col-md-4">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title"><?php echo $row['username']; ?></h5>
-                            <p class="card-text"><?php echo $row['review']; ?></p>
-                            <div class="rating">
-                                <?php
-                                // عرض النجوم بناءً على التقييم
-                                for ($i = 1; $i <= 5; $i++) {
-                                    if ($i <= $rating) {
-                                        echo '<i class="fas fa-star"></i>';  // نجم مملوء
-                                    } else {
-                                        echo '<i class="far fa-star"></i>';  // نجم فارغ
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $rating = (int)$row['rating'];  // قيمة التقييم من 1 إلى 5
+                    ?>
+                    <div class="col-md-4">
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <?php echo htmlspecialchars($row['customer_name']); ?>
+                                </h5>
+                                <p class="card-text mb-1">
+                                    رقم السيارة: <?php echo htmlspecialchars($row['car_number']); ?><br>
+                                    رقم الموقف: <?php echo htmlspecialchars($row['spot_id']); ?>
+                                </p>
+                                <div class="rating mb-2">
+                                    <?php
+                                    // عرض النجوم بناءً على التقييم
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        if ($i <= $rating) {
+                                            echo '<i class="fas fa-star"></i>';  // نجم مملوء
+                                        } else {
+                                            echo '<i class="far fa-star"></i>';  // نجم فارغ
+                                        }
                                     }
-                                }
-                                ?>
+                                    ?>
+                                </div>
+                                <small class="text-muted">
+                                    وقت الحجز: <?php echo htmlspecialchars($row['booking_time']); ?>
+                                </small>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php
+                    <?php
+                }
+            } else {
+                echo '<div class="col-12 text-center"><p>لا توجد تقييمات حتى الآن.</p></div>';
             }
             ?>
         </div>

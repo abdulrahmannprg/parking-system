@@ -1,22 +1,35 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: login.php');
+    exit;
+}
+
 include 'db_connect.php';
 
-// التحقق من أن المستخدم قد سجل الدخول وأنه مشرف
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php');  // إذا لم يكن مشرفًا أو لم يسجل دخوله، إعادة التوجيه إلى صفحة تسجيل الدخول
-    exit;
+if (!isset($_GET['id'])) {
+    die("لم يتم تحديد الحجز.");
 }
 
-if (isset($_GET['id'])) {
-    $booking_id = $_GET['id'];
+$booking_id = (int)$_GET['id'];
 
-    // استعلام لحذف الحجز
-    $sql = "DELETE FROM bookings WHERE id = $booking_id";
-    mysqli_query($conn, $sql);
-
-    // إعادة التوجيه إلى لوحة التحكم بعد الحذف
-    header("Location: dashboard.php");
-    exit;
+// جلب الحجز لمعرفة رقم الموقف
+$res = mysqli_query($conn, "SELECT spot_id FROM bookings WHERE id = '$booking_id'");
+if (!$res || mysqli_num_rows($res) == 0) {
+    die("الحجز غير موجود.");
 }
+
+$booking = mysqli_fetch_assoc($res);
+$spot_id = (int)$booking['spot_id'];
+
+// حذف الحجز
+mysqli_query($conn, "DELETE FROM bookings WHERE id = '$booking_id'");
+
+// إرجاع الموقف إلى متاح
+mysqli_query($conn, "UPDATE parking_spots SET status = 'available' WHERE id = '$spot_id'");
+
+// الرجوع للوحة التحكم مع رسالة نجاح
+header('Location: dashboard.php?msg=booking_deleted');
+exit;
 ?>
